@@ -104,8 +104,7 @@ const parseXMLFile = (xmlFilePath, jsonFilepath, nodeToExtract, win) => {
   
   writeStream.write('[\n');
   // input | transform
-  readStream
-    .pipe(xmlStreamer(nodeToExtract, { transformer: transformer, max_xml_size: 50000000 }, writeStream, win))
+  readStream.pipe(xmlStreamer(nodeToExtract, { transformer: transformer, max_xml_size: 100000000 }, writeStream, win))
 }
 
 /**
