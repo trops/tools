@@ -88,6 +88,16 @@
           "platforms": [
             "darwin"
           ]
+        },
+        {
+          "name": "@electron-forge/publisher-github",
+          "config": {
+            "repository": {
+              "owner": "trops",
+              "name": "https://github.com/trops/tools"
+            },
+            "prerelease": true
+          }
         }
       ]
     }
