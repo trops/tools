@@ -3,12 +3,9 @@ import Panel from '../common/Panel/Panel';
 import SubPanelChooseNode from '../PanelXMLtoJSON/SubPanelChooseNode';
 import SubPanelConvertToJSON from '../PanelXMLtoJSON/SubPanelConvertToJSON';
 import SubPanelChooseFile from '../PanelXMLtoJSON/SubPanelChooseFile';
-import SubPanelFindNodes from '../PanelXMLtoJSON/SubPanelFindNodes';
 import SubPanelFileComplete from './SubPanelFileComplete';
 import Container from '../common/Container/Container';
 import StepHeader from '../common/Steps/StepHeader';
-import ErrorBanner from '../common/Banner/ErrorBanner';
-
 
 const { ipcRenderer } = window.require("electron");
 

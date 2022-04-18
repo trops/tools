@@ -1,14 +1,7 @@
 import React from "react";
 import Button from "../common/Button";
 import Terminal from "../common/Panel/Terminal";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
-const messages = [
-  {
-    text: 'Hi there',
-  }
-];
 
 class SubPanelChooseNode extends React.Component {
 
