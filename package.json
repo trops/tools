@@ -29,10 +29,11 @@
   "homepage": "./",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run build:css && react-scripts build",
+    "build:css": "tailwindcss -o src/tailwind.css -m",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "concurrently -k \"BROWSER=none npm start\" \"npm:electron\"",
+    "dev": "npm run build:css && concurrently -k \"BROWSER=none npm start\" \"npm:electron\"",
     "electron": "wait-on tcp:3000 && electron-forge start",
     "package": "react-scripts build && electron-forge package",
     "make": "react-scripts build && electron-forge make",
@@ -67,6 +68,8 @@
     "autoprefixer": "^10.4.4",
     "concurrently": "^7.1.0",
     "electron": "^18.0.1",
+    "electron-notarize": "^1.2.1",
+    "electron-osx-sign": "^0.6.0",
     "postcss": "^8.4.12",
     "postcss-loader": "^6.2.1",
     "tailwind-scrollbar": "^1.3.1",
@@ -74,43 +77,6 @@
     "wait-on": "^6.0.1"
   },
   "config": {
-    "forge": {
-      "packagerConfig": {
-        "name": "Tools"
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "Tools",
-            "author": "John P. Giatropoulos"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-dmg",
-          "config": {
-            "name": "Tools"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        }
-      ],
-      "publishers": [
-        {
-          "name": "@electron-forge/publisher-github",
-          "config": {
-            "repository": {
-              "owner": "trops",
-              "name": "tools"
-            },
-            "prerelease": true
-          }
-        }
-      ]
-    }
+    "forge": "./forge.config.js"
   }
 }
