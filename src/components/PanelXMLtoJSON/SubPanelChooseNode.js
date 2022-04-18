@@ -45,7 +45,7 @@ class SubPanelChooseNode extends React.Component {
         showPrompt: false,
       });
       messages.push({
-        text: `${[...new Set(nodeFound)].length} nodes found.`,
+        text: `${nodeFound.length} nodes found.`,
         showCursor: false,
         showPrompt: false,
         color: 'text-yellow-500'
@@ -79,7 +79,7 @@ class SubPanelChooseNode extends React.Component {
               <Terminal messages={messages} />
             </div>
             <div className="flex flex-col space-y-1 h-full w-1/2 overflow-y-scroll scrollbar scrollbar-thumb-gray-900 scrollbar-track-gray-800">
-              {nodes.length > 0 && [...new Set(nodeFound)].map(node => {
+              {nodes.length > 0 && nodeFound.map(node => {
                 return (
                   <div key={node} className="flex space-x-2 w-full rounded text-sm font-medium text-gray-100 bg-gray-700 p-4 cursor-pointer hover:bg-indigo-600 items-center align-middle" onClick={() => this.handleChooseNode(node)}>
                     <FontAwesomeIcon icon="fa-brands fa-hashnode" size="xs" className="text-gray-500 hover:text-gray-100" /><span className="">{node}</span></div>
