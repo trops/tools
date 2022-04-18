@@ -25,17 +25,15 @@ class Terminal extends React.Component {
   }
 
   render() {
-    const { heading, messages, onCancel, prompt } = this.props;
+    const { heading, messages, prompt } = this.props;
     return (
       <div className="flex flex-col h-full w-full rounded bg-gray-900 text-indigo-200 text-sm border-2 border-gray-700 overflow-hidden">
         <div className="flex flex-col bg-gray-800 border-b-2 border-gray-700 shadow justify-center items-center">
           <span className="text-gray-500 p-2 justify-center items-center font-mono text-xs shadow">{heading}</span>
         </div>
-        {/* <div className="flex w-full h-full"> */}
-          <div className="flex flex-1 flex-col-reverse p-4 w-full overflow-y-scroll h-full scrollbar scrollbar-thumb-gray-900 scrollbar-track-gray-800">
-            {messages.reverse().map((message, index) => this.renderMessage(message, prompt, index))}
-          </div>
-        {/* </div> */}
+        <div className="flex flex-1 flex-col-reverse p-4 w-full overflow-y-scroll h-full scrollbar scrollbar-thumb-gray-900 scrollbar-track-gray-800">
+          {messages.reverse().map((message, index) => this.renderMessage(message, prompt, index))}
+        </div>
       </div>
     )
   }

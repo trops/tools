@@ -75,7 +75,7 @@ class SubPanelChooseNode extends React.Component {
         <div className="flex w-full flex-col flex-1 rounded space-y-2 h-full">
 
           <div className="flex flex-1 space-x-4 w-full h-full overflow-hidden">
-            <div className="flex flex-col justify-start w-1/2 h-full">
+            <div className="flex flex-col justify-start w-1/2 h-full overflow-hidden">
               <Terminal messages={messages} />
             </div>
             <div className="flex flex-col space-y-1 h-full w-1/2 overflow-y-scroll scrollbar scrollbar-thumb-gray-900 scrollbar-track-gray-800">
