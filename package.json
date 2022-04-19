@@ -19,8 +19,7 @@
     "sax": "^1.2.4",
     "saxpath": "^0.6.5",
     "web-vitals": "^2.1.4",
-    "xml-js": "^1.6.11",
-    "xtreamer": "^1.1.2"
+    "xml-splitter": "^1.2.1"
   },
   "main": "public/electron.js",
   "homepage": "./",
