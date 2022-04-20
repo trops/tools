@@ -6,10 +6,22 @@ import Footer from './components/common/Footer';
 
 // FontAwesome
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCheckSquare, faCoffee, faFile, faHandPointer, faFileArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { faCheckSquare, faCoffee, faFile, faHandPointer, faFileArrowDown, faXmark, faWindowClose, faWindowRestore, faWindowMaximize, faWindowMinimize } from '@fortawesome/free-solid-svg-icons';
 import { faHashnode } from '@fortawesome/free-brands-svg-icons';
 
-library.add(faCoffee, faCheckSquare, faHashnode, faFile, faHandPointer, faFileArrowDown)
+library.add(
+  faCoffee, 
+  faCheckSquare, 
+  faHashnode, 
+  faFile, 
+  faHandPointer, 
+  faFileArrowDown,
+  faXmark,
+  faWindowClose,
+  faWindowMinimize,
+  faWindowRestore,
+  faWindowMaximize
+)
 class App extends React.Component {q
 
   constructor(props) {
@@ -21,14 +33,12 @@ class App extends React.Component {q
   }
 
   handleChoose = (chosen) => {
-    console.log(chosen);
     this.setState({
       chosen
     });
   }
 
   handleHome = () => {
-    console.log('CANCEL');
     this.setState({
       chosen: null
     });

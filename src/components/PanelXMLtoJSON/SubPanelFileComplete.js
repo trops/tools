@@ -2,14 +2,13 @@ import React from "react";
 import Button from "../common/Button";
 import Terminal from "../common/Panel/Terminal";
 
-const { shell } = window.require('electron');
+const mainApi = window.mainApi;
 
 class SubPanelFileComplete extends React.Component {
 
   handleOpenFolder = () => {
     const { fileLocation } = this.props;
-    shell.showItemInFolder(fileLocation) // Show the given file in a file manager. If possible, select the file.
-    // shell.openPath('folderpath') // Open the given file in the desktop's default manner.
+    mainApi.openFolder(fileLocation);
   }
 
   render() {

@@ -1,26 +1,41 @@
 const path = require('path');
-
 const { app, BrowserWindow, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
+const { parseXmlMainEvents, menuEvents } = require('./js/events');
 
 // My library of functions
-const { showDialogChooseXMLFile, parseXMLFileChosen, parseXMLFileChosenWithNode } = require('./lib/dialogController');
+const { 
+  showDialogChooseXMLFile, 
+  parseXMLFileChosen, 
+  parseXMLFileChosenWithNode 
+} = require('./lib/dialogController');
+
+const { 
+  minimizeWindow,
+  maxUnmaxWindow,
+  closeWindow
+} = require('./js/menu/menu-functions');
+
+const { menu }  = require('./js/menu/menu');
+
+let win;
 
 function createWindow() {
-  // Create the browser window.
-  const win = new BrowserWindow({
+
+  // lets make sure and not listen twice...
+  ipcMain.removeAllListeners();
+
+  win = new BrowserWindow({
     width: 1024,
     height: 768,
     minWidth:800,
     minHeight: 600,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true,
-      //webSecurity: false,
-      allowRunningInsecureContent: false
+      preload: path.join(__dirname, "/js/preload.js"),
+      contextIsolation: true,
     }
   });
+
 
   // and load the index.html of the app.
   // win.loadFile("index.html");
@@ -34,30 +49,17 @@ function createWindow() {
     win.webContents.openDevTools({ mode: 'detach' });
   }
 
-  /*
-    * handlers 
-    */
+  // Handle messages coming from Renderer TO Main thread
 
-    ipcMain.handle("showDialogChooseXMLFile", (e, message) => {
-      showDialogChooseXMLFile(win, message);
-      e.sender.send("Got your message");
-    });
+  // Message Handlers for Parse XML 
+  ipcMain.handle(parseXmlMainEvents.MAIN_PARSE_XML_SHOW_DIALOG, (e, message) => showDialogChooseXMLFile(win, message));
+  ipcMain.handle(parseXmlMainEvents.MAIN_PARSE_XML_CHOSE_FILE, (e, message) => parseXMLFileChosen(win, message));
+  ipcMain.handle(parseXmlMainEvents.MAIN_PARSE_XML_CHOSE_FILE_WITH_NODE, (e, message) => parseXMLFileChosenWithNode(win, message));
 
-    ipcMain.handle("choseXMLFile", (e, message) => {
-
-    });
-
-    /**
-     * Parse the XML filepath chosen by the user
-     */
-    ipcMain.handle("parseXMLFileChosen", (e, message) => {
-      parseXMLFileChosen(win, message);
-    });
-
-    ipcMain.handle("parseXMLFileChosenWithNode", (e, message) => {
-      parseXMLFileChosenWithNode(win, message);
-    });
-
+  // When ipcRenderer sends mouse click co-ordinates, show menu at that position.
+  ipcMain.handle(menuEvents.MENU_MINIMIZE_WINDOW, (e, args) => minimizeWindow());
+  ipcMain.handle(menuEvents.MENU_MAXIMIZE_WINDOW, (e, args) => maxUnmaxWindow());
+  ipcMain.handle(menuEvents.MENU_CLOSE_WINDOW, (e, args) => closeWindow());
 }
 
 // This method will be called when Electron has finished
@@ -77,5 +79,15 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
+  }
+});
+
+app.on('activate', () => {
+  const mainWindow = BrowserWindow.getAllWindows();
+  if (mainWindow.length > 0) {
+    mainWindow[0].show();
+  } else {
+    // Something went wrong
+    app.quit();
   }
 });

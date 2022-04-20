@@ -3,13 +3,13 @@ import Panel from '../common/Panel/Panel';
 import SubPanelChooseNode from '../PanelXMLtoJSON/SubPanelChooseNode';
 import SubPanelConvertToJSON from '../PanelXMLtoJSON/SubPanelConvertToJSON';
 import SubPanelChooseFile from '../PanelXMLtoJSON/SubPanelChooseFile';
-import SubPanelFindNodes from '../PanelXMLtoJSON/SubPanelFindNodes';
 import SubPanelFileComplete from './SubPanelFileComplete';
 import Container from '../common/Container/Container';
 import StepHeader from '../common/Steps/StepHeader';
 
 
-const { ipcRenderer } = window.require("electron");
+const { ipcRenderer } = require("electron");
+const mainApi = window.mainApi;
 
 const steps = {
   1: {
@@ -47,7 +47,7 @@ class PanelJSONToJSON extends React.Component {
    * Step 1: Choose a file using the dialog window
    */
   openFileWindow = () => {
-    ipcRenderer.invoke("showDialogChooseXMLFile", "Let's choose a file.");
+    mainApi.send("showDialogChooseXMLFile", "Let's choose a file.");
     
     this.setState({
       sourceXML: null,
@@ -61,7 +61,7 @@ class PanelJSONToJSON extends React.Component {
       errorMessage: null
     });
 
-    ipcRenderer.on("parseXMLFileChosenError", (e, message) => {
+    mainApi.handle("parseXMLFileChosenError", (e, message) => {
       this.setState({
         errorMessage: message.message
       });
@@ -69,7 +69,7 @@ class PanelJSONToJSON extends React.Component {
 
     // The user has successfully chosen a file, and now we will 
     // process this file to pull out the nodes available for extraction
-    ipcRenderer.on("choseXMLFile", (e, message) => {
+    mainApi.handle("choseXMLFile", (e, message) => {
       this.setState({
         sourceXML: message.filepath,
         toJSON: message.toFilepath,
@@ -84,7 +84,7 @@ class PanelJSONToJSON extends React.Component {
       this.handleProcessXML();
     });
 
-    ipcRenderer.on('xmlDataParsed', (e, message) => {
+    mainApi.handle('xmlDataParsed', (e, message) => {
       const xmlCount = this.state.xmlDataParsed;
       this.setState({
         xmlDataParsed: xmlCount + 1,
@@ -92,7 +92,7 @@ class PanelJSONToJSON extends React.Component {
       })
     });
 
-    ipcRenderer.on('xmlToJsonComplete', (e, message) => {
+    mainApi.handle('xmlToJsonComplete', (e, message) => {
       this.setState({
         complete: true,
         isProcessing: true,
@@ -101,14 +101,14 @@ class PanelJSONToJSON extends React.Component {
       });
     });
 
-    ipcRenderer.on('xmlToJsonError', (e, message) => {
+    mainApi.handle('xmlToJsonError', (e, message) => {
       this.setState({
         errorMessage: message,
         step: 4
       });
     });
 
-    ipcRenderer.on("parseXMLFileChosenTagFound", (e, message) => {
+    mainApi.handle("parseXMLFileChosenTagFound", (e, message) => {
       const nodes = this.state.nodeFound;
       nodes.push(message.node);
       this.setState({
@@ -117,7 +117,7 @@ class PanelJSONToJSON extends React.Component {
       });
     });
 
-    ipcRenderer.on('parseXMLFileChosenTagsFound', (e, message) => {
+    mainApi.handle('parseXMLFileChosenTagsFound', (e, message) => {
       this.setState({
         tagsFound: message.tags,
         step: 2,
@@ -146,7 +146,7 @@ class PanelJSONToJSON extends React.Component {
       errorMessage: null,
     });
     const { sourceXML, toJSON } = this.state;
-    ipcRenderer.invoke("parseXMLFileChosen", {
+    mainApi.send("parseXMLFileChosen", {
       filepath: sourceXML,
       toFilepath: toJSON
     });
@@ -160,7 +160,7 @@ class PanelJSONToJSON extends React.Component {
       errorMessage: null,
     });
     const { sourceXML, toJSON } = this.state;
-    ipcRenderer.invoke("parseXMLFileChosenWithNode", {
+    mainApi.send("parseXMLFileChosenWithNode", {
       filepath: sourceXML,
       toFilepath: toJSON,
       nodeToExtract: tag

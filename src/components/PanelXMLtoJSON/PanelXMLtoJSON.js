@@ -7,7 +7,9 @@ import SubPanelFileComplete from './SubPanelFileComplete';
 import Container from '../common/Container/Container';
 import StepHeader from '../common/Steps/StepHeader';
 
-const { ipcRenderer } = window.require("electron");
+const mainApi = window.mainApi;
+const renderEvents = mainApi.renderEvents;
+// const { ipcRenderer } = require("electron");
 
 const steps = {
   1: {
@@ -45,12 +47,22 @@ class PanelXMLToJSON extends React.Component {
    * Step 1: Choose a file using the dialog window
    */
   openFileWindow = () => {
-    
+
     // unregister listeners if any are left...
     this.handleUnregisterListeners();
 
-    ipcRenderer.invoke("showDialogChooseXMLFile", "Let's choose a file.");
-    
+    // lets open the dialog window to choose a file
+    mainApi.parseXML.showDialogChooseXMLFile();
+
+    // Register ipcRenderer listeners using the API (contextBridge)
+    mainApi.on(renderEvents.RENDER_PARSE_XML_CHOSE_FILE, this.handleChoseXmlFile);
+    mainApi.on(renderEvents.RENDER_PARSE_XML_CHOSE_FILE_ERROR, this.handleParseXmlFileChosenError);
+    mainApi.on(renderEvents.RENDER_PARSE_XML_FILE_CHOSEN_NODE_FOUND, this.handleParseXMLFileChosenTagFound);
+    mainApi.on(renderEvents.RENDER_PARSE_XML_FILE_CHOSEN_NODES_COMPLETE, this.handleParseXMLFileChosenTagsFound);
+    mainApi.on(renderEvents.RENDER_PARSE_SPLIT_XML_NODE, this.handleXmlDataParsed);
+    mainApi.on(renderEvents.RENDER_PARSE_XML_TO_JSON_COMPLETE, this.handleXmlToJsonComplete);
+    mainApi.on(renderEvents.RENDER_PARSE_XML_TO_JSON_ERROR, this.handleXmlToJsonError);
+
     this.setState({
       sourceXML: null,
       toJSON: null,
@@ -63,14 +75,6 @@ class PanelXMLToJSON extends React.Component {
       step: 1,
       errorMessage: null
     });
-
-    ipcRenderer.on("parseXMLFileChosenError", this.handleParseXmlFileChosenError);
-    ipcRenderer.on("choseXMLFile", this.handleChoseXmlFile);
-    ipcRenderer.on('xmlDataParsed', this.handleXmlDataParsed);
-    ipcRenderer.on('xmlToJsonComplete', this.handleXmlToJsonComplete);
-    ipcRenderer.on('xmlToJsonError', this.handleXmlToJsonError);
-    ipcRenderer.on("parseXMLFileChosenTagFound", this.handleParseXMLFileChosenTagFound);
-    ipcRenderer.on('parseXMLFileChosenTagsFound', this.handleParseXMLFileChosenTagsFound);    
   }
 
 
@@ -100,14 +104,23 @@ class PanelXMLToJSON extends React.Component {
     });
   }
 
+  /**
+   * handleXmlDataParsed
+   * This is called when the XMLSplitter finds a SINGLE node and we parse that into JSON
+   * @param {object} message the { node, tag, path } of the XML node found
+   */
   handleXmlDataParsed = (e, message) => {
     const xmlCount = this.state.xmlDataParsed;
-      this.setState({
-        xmlDataParsed: xmlCount + 1,
-        errorMessage: null,
-      });
+    this.setState({
+      xmlDataParsed: xmlCount + 1,
+      errorMessage: null,
+    });
   }
 
+  /**
+   * handleXmlToJsonComplete
+   * All the nodes have been converted (end)
+   */
   handleXmlToJsonComplete = (e, message) => {
     this.setState({
       complete: true,
@@ -160,9 +173,9 @@ class PanelXMLToJSON extends React.Component {
       step: 2,
       errorMessage: null,
     });
-    const { sourceXML, toJSON } = this.state;
 
-    ipcRenderer.invoke("parseXMLFileChosen", {
+    const { sourceXML, toJSON } = this.state;
+    mainApi.parseXML.parseXMLFileChosen({
       filepath: sourceXML,
       toFilepath: toJSON
     });
@@ -178,7 +191,7 @@ class PanelXMLToJSON extends React.Component {
       complete: false,
     });
     const { sourceXML, toJSON } = this.state;
-    ipcRenderer.invoke("parseXMLFileChosenWithNode", {
+    mainApi.parseXML.parseXMLFileChosenWithNode({
       filepath: sourceXML,
       toFilepath: toJSON,
       nodeToExtract: tag
@@ -201,20 +214,14 @@ class PanelXMLToJSON extends React.Component {
     });
 
     // unregister listeners
-
     this.handleUnregisterListeners();
 
+    // cancel the window
     this.props.onCancel();
   }
 
   handleUnregisterListeners = () => {
-    ipcRenderer.removeListener("parseXMLFileChosenError", this.handleParseXmlFileChosenError);
-    ipcRenderer.removeListener("choseXMLFile", this.handleChoseXmlFile);
-    ipcRenderer.removeListener('xmlDataParsed', this.handleXmlDataParsed);
-    ipcRenderer.removeListener('xmlToJsonComplete', this.handleXmlToJsonComplete);
-    ipcRenderer.removeListener('xmlToJsonError', this.handleXmlToJsonError);
-    ipcRenderer.removeListener("parseXMLFileChosenTagFound", this.handleParseXMLFileChosenTagFound);
-    ipcRenderer.removeListener('parseXMLFileChosenTagsFound', this.handleParseXMLFileChosenTagsFound);  
+    mainApi.removeAllListeners();
   }
 
   handleStartOver = () => {
