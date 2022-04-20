@@ -16,8 +16,6 @@ const {
   closeWindow
 } = require('./js/menu/menu-functions');
 
-const { menu }  = require('./js/menu/menu');
-
 let win;
 
 function createWindow() {

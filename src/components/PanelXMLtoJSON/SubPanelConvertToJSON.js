@@ -9,7 +9,7 @@ class SubPanelConvertToJSON extends React.Component {
   }
 
   generateTerminalMessages = () => {
-    const { xmlDataParsed, xmlDataParsedArray, sourceFile, outFile, complete } = this.props;
+    const { xmlDataParsed, sourceFile, outFile, complete } = this.props;
     const sourceTruncated = sourceFile.split('\\').pop().split('/').pop() || '';
     const outTruncated = outFile.split('\\').pop().split('/').pop() || '';
     const messages = [];
@@ -28,14 +28,6 @@ class SubPanelConvertToJSON extends React.Component {
       showPrompt: false,
       showCursor: false
     });
-
-    // xmlDataParsedArray.forEach(element => {
-    //   messages.push({
-    //     text: element,
-    //     showPrompt: false,
-    //     showCursor: false
-    //   });
-    // });
 
     if (xmlDataParsed > 3000) {
       messages.push({

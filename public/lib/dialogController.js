@@ -123,7 +123,7 @@ const xmlSplitterStream = (nodeToExtract, writeStream, win) => {
   return mainApi.parseXML.xmlSplitter(`//${nodeToExtract}`)
     .on('data', (node, tag, path) => {
       win.webContents.send(mainApi.renderEvents.RENDER_PARSE_SPLIT_XML_NODE, { node, tag, path });
-      writeStream.write(parseChunk(node, win));
+      node && writeStream.write(parseChunk(node, win));
     }).on("end", () => {
       writeStream.write(']');
       writeStream.end();
