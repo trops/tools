@@ -1,9 +1,9 @@
 const parseXmlRenderEvents = require('./parseXmlRenderEvents');
 const parseXmlMainEvents = require('./parseXmlMainEvents');
-const menuEvents = require('./menuEvents');
+const applicationMenuEvents = require('./applicationMenuMainEvents');
 
 module.exports = {
   parseXmlMainEvents,
   parseXmlRenderEvents,
-  menuEvents
+  applicationMenuEvents
 }

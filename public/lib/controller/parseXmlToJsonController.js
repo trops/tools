@@ -1,5 +1,5 @@
 const { dialog } = require('electron');
-const mainApi = require('../js/api/mainApi');
+const mainApi = require('../api/mainApi');
 
 let count = 0;
 /**

@@ -1,7 +1,8 @@
 const { ipcRenderer, shell } = require('electron');
 const fs = require('fs');
-const { parseXmlRenderEvents, parseXmlMainEvents } = require('../events');
-const { parseXmlApi, menuApi } = require('../api');
+const { parseXmlRenderEvents, parseXmlMainEvents, applicationMenuEvents } = require('../events');
+const parseXmlApi = require('./parseXMLApi');
+const applicationMenuApi = require('./applicationMenuApi');
 /**
  * Api to expose the ipcRenderer invoke message sending capabilities
  * ipcMain will then handle the invocation from this main api, which is called
@@ -11,10 +12,12 @@ const { parseXmlApi, menuApi } = require('../api');
 const mainApi = {
     mainEvents: { ...parseXmlMainEvents },
     renderEvents: { ...parseXmlRenderEvents },
+    applicationMenuEvents: { ...applicationMenuEvents },
     
     removeListener: (name, fn) => ipcRenderer.removeListener(name, fn),
     removeAllListeners: () => ipcRenderer.removeAllListeners(),
     addListener: (name, fn) => ipcRenderer.addListener(name, fn),
+
     createReadStream: (filepath) => fs.createReadStream(filepath),
     createWriteStream: (filepath) => fs.createWriteStream(filepath),
     
@@ -24,7 +27,7 @@ const mainApi = {
       shell.openPath('folderpath') // Open the given file in the desktop's default manner.
     },
     parseXML: parseXmlApi,
-    menu: menuApi
+    applicationMenu: applicationMenuApi
 };
 
 module.exports = mainApi;

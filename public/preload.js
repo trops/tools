@@ -3,7 +3,7 @@
  * 
  */
   const { contextBridge } = require('electron');
-  const mainApi = require('./api/mainApi');
+  const mainApi = require('./lib/api');
 
   // expose the methods to the renderer
   contextBridge.exposeInMainWorld( 'mainApi', mainApi );

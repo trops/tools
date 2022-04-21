@@ -9,7 +9,6 @@ import StepHeader from '../common/Steps/StepHeader';
 
 const mainApi = window.mainApi;
 const renderEvents = mainApi.renderEvents;
-// const { ipcRenderer } = require("electron");
 
 const steps = {
   1: {
