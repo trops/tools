@@ -1,7 +1,7 @@
 const path = require('path');
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
-const { parseXmlMainEvents, applicationMenuEvents } = require('./lib/events');
+const { parseXmlMainEvents } = require('./lib/events');
 
 // My library of functions
 const { 
@@ -10,7 +10,7 @@ const {
   parseXMLFileChosenWithNode 
 } = require('./lib/controller');
 
-const { applicationMenu } = require('./lib/controller');
+// const { applicationMenu } = require('./lib/controller');
 
 let win;
 
