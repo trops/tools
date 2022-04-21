@@ -58,12 +58,12 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
-  const menu = Menu.buildFromTemplate(applicationMenu(app).menuTemplate);
-  app.on(applicationMenuEvents.MAIN_MENU_TRANSFORM_XML_TO_JSON, () => {
-    console.log('app heard it');
-    win.webContents.send(applicationMenuEvents.MAIN_MENU_TRANSFORM_XML_TO_JSON, {});
-  });
-  Menu.setApplicationMenu(menu);
+  // const menu = Menu.buildFromTemplate(applicationMenu(app).menuTemplate);
+  // app.on(applicationMenuEvents.MAIN_MENU_TRANSFORM_XML_TO_JSON, () => {
+  //   console.log('app heard it');
+  //   win.webContents.send(applicationMenuEvents.MAIN_MENU_TRANSFORM_XML_TO_JSON, {});
+  // });
+  // Menu.setApplicationMenu(menu);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

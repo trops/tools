@@ -22,7 +22,7 @@ library.add(
   faWindowMaximize
 )
 
-const mainApi = window.mainApi;
+//const mainApi = window.mainApi;
 
 class App extends React.Component {
 
@@ -35,15 +35,15 @@ class App extends React.Component {
   }
 
   componentDidMount = () => {
-    console.log('mounted');
-    // Navigate from Main Application Menu
-    mainApi.on(mainApi.applicationMenuEvents.MAIN_MENU_TRANSFORM_XML_TO_JSON, () => {
-      this.handleChoose('XML-JSON');
-    });
+    // console.log('mounted');
+    // // Navigate from Main Application Menu
+    // mainApi.on(mainApi.applicationMenuEvents.MAIN_MENU_TRANSFORM_XML_TO_JSON, () => {
+    //   this.handleChoose('XML-JSON');
+    // });
   }
 
   componentWillUnmount = () => {
-    console.log('unmount');
+    // console.log('unmount');
     this.setState({
       chosen: null
     });
