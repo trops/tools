@@ -1,5 +1,6 @@
 import React from 'react';
 import PanelXMLToJSON from './PanelXMLtoJSON/PanelXMLtoJSON.js';
+import PanelJSONToJSON from './PanelJSONtoJSON/PanelJSONtoJSON.js';
 
 class TopAction extends React.Component {
   render() {
@@ -13,6 +14,7 @@ class TopAction extends React.Component {
           </div>
         )}
         {chosen === 'XML-JSON' && <PanelXMLToJSON onCancel={onCancel} onStepChange={this.handleStepChange} />}
+        {chosen === 'JSON-JSON' && <PanelJSONToJSON onCancel={onCancel} onStepChange={this.handleStepChange} />}
       </div>
     );
   }

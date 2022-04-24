@@ -5,9 +5,9 @@ class Panel extends React.Component {
 
   
   render() {
-    const { errorMessage } = this.props;
+    const { errorMessage, bgColor } = this.props;
     return (
-      <div className="flex flex-1 flex-col h-full bg-gray-800 text-gray-100 rounded-lg align-middle items-center text-center p-4 border-t-1 border-gray-800 space-y-4 overflow-hidden">
+      <div className={`flex flex-1 flex-col h-full bg-gray-800 text-gray-100 rounded-lg align-middle items-center text-center p-4 border-t-1 ${bgColor} space-y-4 overflow-hidden`}>
           {errorMessage && <ErrorBanner message={errorMessage} />}
           {this.props.children}
       </div>
@@ -17,7 +17,8 @@ class Panel extends React.Component {
 
 Panel.defaultProps = {
   children: [],
-  errorMessage: null
+  errorMessage: null,
+  bgColor: 'bg-gray-800'
 }
 
 export default Panel;

@@ -12,6 +12,7 @@ const parseXmlApi = {
   parseXMLFileChosen: (message) => ipcRenderer.invoke(parseXmlMainEvents.MAIN_PARSE_XML_CHOSE_FILE, message),
   parseXMLFileChosenWithNode: (message) => ipcRenderer.invoke(parseXmlMainEvents.MAIN_PARSE_XML_CHOSE_FILE_WITH_NODE, message),
   createSaxStream: () => sax.createStream(),
+  saxParser: () => sax.parser(true),
   xmlSplitter: (nodeToExtract) => new XMLSplitter(nodeToExtract)
 };
 

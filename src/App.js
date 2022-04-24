@@ -5,7 +5,7 @@ import { Header, Footer } from './components/common';
 
 // FontAwesome
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCheckSquare, faCoffee, faFile, faHandPointer, faFileArrowDown, faXmark, faWindowClose, faWindowRestore, faWindowMaximize, faWindowMinimize } from '@fortawesome/free-solid-svg-icons';
+import { faL, faCheckSquare, faCoffee, faFile, faHandPointer, faFileArrowDown, faXmark, faWindowClose, faWindowRestore, faWindowMaximize, faWindowMinimize } from '@fortawesome/free-solid-svg-icons';
 import { faHashnode } from '@fortawesome/free-brands-svg-icons';
 
 library.add(
@@ -19,10 +19,9 @@ library.add(
   faWindowClose,
   faWindowMinimize,
   faWindowRestore,
-  faWindowMaximize
+  faWindowMaximize,
+  faL
 )
-
-//const mainApi = window.mainApi;
 
 class App extends React.Component {
 

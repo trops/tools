@@ -1,14 +1,18 @@
 const path = require('path');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
-const { parseXmlMainEvents } = require('./lib/events');
+const { parseXmlMainEvents, jsonMapMainEvents} = require('./lib/events');
 
 // My library of functions
 const { 
   showDialogChooseXMLFile, 
   parseXMLFileChosen, 
-  parseXMLFileChosenWithNode 
+  parseXMLFileChosenWithNode,
+  showDialogChooseJSONFile,
+  parseJSONFileChosen,
+  findKeysInJsonFile
 } = require('./lib/controller');
+
 
 // const { applicationMenu } = require('./lib/controller');
 
@@ -51,6 +55,17 @@ function createWindow() {
   ipcMain.handle(parseXmlMainEvents.MAIN_PARSE_XML_SHOW_DIALOG, (e, message) => showDialogChooseXMLFile(win, message));
   ipcMain.handle(parseXmlMainEvents.MAIN_PARSE_XML_CHOSE_FILE, (e, message) => parseXMLFileChosen(win, message));
   ipcMain.handle(parseXmlMainEvents.MAIN_PARSE_XML_CHOSE_FILE_WITH_NODE, (e, message) => parseXMLFileChosenWithNode(win, message));
+
+  // Message Handlers for Map Json
+  ipcMain.handle(jsonMapMainEvents.MAIN_JSON_MAP_SHOW_DIALOG, (e, message) => {
+    showDialogChooseJSONFile(win, message);
+  });
+  ipcMain.handle(jsonMapMainEvents.MAIN_JSON_MAP_CHOSE_FILE, (e, message) => {
+    parseJSONFileChosen(win, message);
+  });
+  ipcMain.handle(jsonMapMainEvents.MAIN_JSON_MAP_LIST_KEYS, (e, filepath) => {
+    findKeysInJsonFile(win, filepath);
+  });
 }
 
 // This method will be called when Electron has finished
