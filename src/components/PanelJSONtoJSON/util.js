@@ -12,12 +12,12 @@ export const labelColorForType = (type) => {
 
 export const bgColorForType = (type) => {
   try {
-    let color = 'bg-gray-800';
-    if (type === 'String') color = 'bg-green-800';
-    if (type === 'Object') color = 'bg-indigo-800';
-    if (type === 'Array') color = 'bg-yellow-800';
+    let color = 'bg-gray-900';
+    if (type === 'String') color = 'bg-green-900';
+    if (type === 'Object') color = 'bg-indigo-900';
+    if (type === 'Array') color = 'bg-yellow-900';
     return color;
   } catch(e) {
-    return 'bg-gray-800';
+    return 'bg-gray-900';
   }
 };

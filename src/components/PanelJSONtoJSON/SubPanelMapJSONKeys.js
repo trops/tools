@@ -1,6 +1,7 @@
 import React from "react";
-import { Button, Terminal, Panel } from "../common";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button } from "../common";
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
 import {
   BreadcrumbJSON,
   NestedTreeItem
@@ -17,7 +18,8 @@ class SubPanelMapJSONKeys extends React.Component {
       selectedKey: null,
       selectedJsonData: {},
       selectedDotNotation: null,
-      selectedDotKeys: []
+      selectedDotKeys: [],
+      reorderedNodes: null
     }
   }
 
@@ -156,22 +158,15 @@ class SubPanelMapJSONKeys extends React.Component {
 
   selectedDotKeyIndex = (dotKey, selectedDotKeys) => selectedDotKeys.indexOf(dotKey);
 
-  /**
-   * renderKeysInspectorRecursive
-   * @param {*} keys 
-   * @param {*} jsonData 
-   * @param {*} items 
-   * @param {*} count 
-   * @param {*} parentKey 
-   * @param {*} isChildArray 
-   * @returns 
-   */
-  renderKeysInspectorRecursive = (keys, jsonData, items = [], count = 0, parentKey = null, isChildArray = false) => {
+  generateKeysInspectorRecursive = (keys, jsonData, items = [], count = 0, parentKey = null, isChildArray = false, dragProvider, indexCount = 0) => {
 
     const { selectedDotKeys } = this.state;
 
     // lets loop through all of the keys
-    Object.keys(keys).forEach(key => {
+    Object.keys(keys).forEach((key, index) => {
+
+      indexCount++;
+      // console.log('index count ', indexCount);
 
       let newParentKey = parentKey !== null 
         ? (isChildArray === false ? `${parentKey}.${key}` : `${parentKey}${key}`) 
@@ -182,62 +177,61 @@ class SubPanelMapJSONKeys extends React.Component {
       try {
         // first we have to check to see if the object is a string...
         let jsonObjectFromKey = mainApi.jsonMap.getJsonFromObjectWithDot(newParentKey, jsonData);
-        const isString = typeof jsonObjectFromKey === 'string';
-        const isArray = Array.isArray(jsonObjectFromKey);
         let dotObjectFromKey = mainApi.jsonMap.convertObjectToDotObject(jsonObjectFromKey);
         const objectType = mainApi.util.getType(jsonObjectFromKey);
+        const isString = objectType === 'String';
+        const isArray = objectType === 'Array';
 
         // not a string or an array
         if (isString === false && isArray === false) {
          
-          items.push(
-            <NestedTreeItem 
-              onMouseOver={() => this.handleMouseOverKey(key, jsonObjectFromKey, newParentKey)}
-              onClick={() => this.handleClickKey(key, jsonData, newParentKey)}
-              parentKey={parentKey}
-              newParentKey={newParentKey}
-              jsonData={jsonObjectFromKey}
-              currentKey={key}
-              
-            />
-          );
+          items.push({
+            index: indexCount,
+            id: `${indexCount}`,
+            count: count,
+            parentKey: parentKey,
+            newParentKey: newParentKey,
+            jsonData: jsonObjectFromKey,
+            currentKey: key,
+            key: key
+          });
 
-          isSelected && this.renderKeysInspectorRecursive(dotObjectFromKey, jsonData, items, count++, newParentKey);
+          isSelected && this.generateKeysInspectorRecursive(dotObjectFromKey, jsonData, items, count++, newParentKey, isChildArray, dragProvider, indexCount);
 
         } else if (isArray === true) {
           try {
 
-            items.push(
-              <NestedTreeItem 
-                onMouseOver={() => this.handleMouseOverKey(key, jsonObjectFromKey, newParentKey)}
-                onClick={() => this.handleClickKey(key, jsonData, newParentKey)}
-                parentKey={parentKey}
-                newParentKey={newParentKey}
-                jsonData={jsonObjectFromKey}
-                currentKey={key}
-                
-              />
-            );
+            items.push({
+                index: indexCount,
+                id: `${indexCount}`,
+                count: count,
+                parentKey: parentKey,
+                newParentKey: newParentKey,
+                jsonData: jsonObjectFromKey,
+                currentKey: key,
+                key: key
+            });
 
             // recursive call 
-            isSelected && this.renderKeysInspectorRecursive(dotObjectFromKey, jsonData, items, count++, newParentKey, true);
+            isSelected && this.generateKeysInspectorRecursive(dotObjectFromKey, jsonData, items, count++, newParentKey, true, dragProvider, indexCount);
 
           } catch(e) {
             console.log('array error: ', e.message);
           }
         } else {
           // element is a String VALUE (end)
-          items.push(
-            <NestedTreeItem 
-              onMouseOver={() => this.handleMouseOverKey(key, jsonObjectFromKey, newParentKey)}
-              onClick={() => this.handleClickKey(key, jsonData, newParentKey)}
-              parentKey={parentKey}
-              newParentKey={key}
-              jsonData={jsonObjectFromKey}
-              currentKey={key}
-              
-            />
-          );
+          items.push({
+              index: indexCount,
+              id: `${indexCount}`,
+              count: count,
+              parentKey: parentKey,
+              newParentKey: key,
+              jsonData: jsonObjectFromKey,
+              currentKey: key,
+              key: key
+          });
+
+          isSelected && this.generateKeysInspectorRecursive(dotObjectFromKey, jsonData, items, count++, newParentKey, isChildArray, dragProvider, indexCount);
         }
       } catch(e) {
         console.log(e.message);
@@ -245,6 +239,35 @@ class SubPanelMapJSONKeys extends React.Component {
     });
 
     return items;
+  }
+
+  /**
+   * renderNodesToDisplay
+   * Switched to this function so we can pass in the array of nodes
+   * and use that array in the draggable portion of the feature
+   * @param {*} nodes 
+   * @param {*} jsonData 
+   * @param {*} dragProvider 
+   * @returns 
+   */
+  renderNodesToDisplay = (nodes, jsonData, dragProvider = null) => {
+    return nodes.length > 0 
+      ? nodes.map(node => {
+        if (node !== undefined) {
+          // console.log('NODE: ', node);
+          const { key, jsonObjectFromKey, newParentKey } = node;
+          return (
+            <NestedTreeItem 
+              {...node}
+              dragProvider={dragProvider}
+              onMouseOver={() => this.handleMouseOverKey(key, jsonObjectFromKey, newParentKey)}
+              onClick={() => this.handleClickKey(key, jsonData, newParentKey)}
+            />
+          );
+        } else {
+          return null;
+        }
+      }).filter(n => n !== null) : null;
   }
 
   renderKeysInspectorDetail = (key, dotKey, jsonData) => {
@@ -325,10 +348,39 @@ class SubPanelMapJSONKeys extends React.Component {
     }
   }
 
+  handleOnDragEnd = (result, nodesToDisplay) => {
+    if (!result.destination || result.draggableId === null) {
+      return;
+    }
+    
+    const dotKey = result.draggableId.split('-').at(-1);
+    console.log('destination index: ', result.destination.index, result.source.index, result.draggableId, dotKey);
+    console.log('source: ', result.source);
+
+    // we need to get the actual array index of the elements and make some changes here!
+    // the index being stored in the drag is NOT ACCURATE 
+    // and we should use the keys to find the item in the array....
+    // const items = Array.from(characters);
+    // const [reorderedItem] = nodesToDisplay.splice(result.source.index - 1, 1);
+
+    // const [reorderedItem] = nodesToDisplay.filter(node => node.index = result.source.index);
+    // const [destinationItem] = nodesToDisplay.filter(node => node.index = result.destination.index);
+    // console.log('reordered item : ', reorderedItem);
+    // nodesToDisplay.splice(destinationItem, 0, reorderedItem);
+
+
+    // console.log(reorderedItem, nodesToDisplay);
+
+    // this.setState({
+    //   reorderedNodes: nodesToDisplay
+    // });
+  }
+
   render() {
     const { jsonData } = this.props;
-    const { selectedKey, selectedJsonData, selectedDotKey } = this.state;
+    const { selectedKey, selectedJsonData, selectedDotKey, reorderedNodes } = this.state;
     const crumbs = selectedDotKey ? selectedDotKey.split('.') : [];
+    const nodesToDisplay = this.generateKeysInspectorRecursive(jsonData, jsonData, [], 0, null, false);
     return (
       <div className="flex flex-col w-full h-full space-y-4">
         <div className="flex flex-row space-x-4 h-full w-full">
@@ -342,7 +394,42 @@ class SubPanelMapJSONKeys extends React.Component {
                   <span className="text-xs font-bold text-gray-400">SOURCE</span>
                 </div>
                 <div className="flex flex-col w-full h-full overflow-y-scroll scrollbar scrollbar-thumb-gray-900 scrollbar-track-gray-800 p-2 bg-clip-border space-y-1">
-                  {jsonData && this.renderKeysInspectorRecursive(jsonData, jsonData)}
+                  {jsonData && reorderedNodes && (
+                    <DragDropContext onDragEnd={(result) => this.handleOnDragEnd(result, reorderedNodes)}>
+                      <Droppable droppableId="json-list">
+                        {provided => (
+                          <div {...provided.droppableProps} ref={provided.innerRef}>
+                              {/* {this.renderKeysInspectorRecursive(jsonData, jsonData, [], 0, null, false, provided)} */}
+                              {reorderedNodes === null && nodesToDisplay !== null && this.renderNodesToDisplay(nodesToDisplay, jsonData, provided)}
+                              {reorderedNodes !== null && this.renderNodesToDisplay(reorderedNodes, jsonData, provided)}
+                              {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </DragDropContext>
+                  )}
+                  {jsonData && reorderedNodes === null && (
+                    <DragDropContext onDragEnd={(result) => this.handleOnDragEnd(result, nodesToDisplay)}>
+                      <Droppable droppableId="json-list">
+                        {provided => (
+                          <div {...provided.droppableProps} ref={provided.innerRef}>
+                              {/* {this.renderKeysInspectorRecursive(jsonData, jsonData, [], 0, null, false, provided)} */}
+                              {reorderedNodes === null && nodesToDisplay !== null && this.renderNodesToDisplay(nodesToDisplay, jsonData, provided)}
+                              {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </DragDropContext>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col space-y-1 h-full justify-start text-left align-left items-start w-full bg-gray-900 rounded overflow-hidden">
+                <div className="flex flex-row w-full border-b-2 border-indigo-900 p-2 rounded-tr rounded-tl bg-gray-900">
+                  <span className="text-xs font-bold text-gray-400">TRANSFORMED</span>
+                </div>
+                <div className="flex flex-col w-full h-full overflow-y-scroll scrollbar scrollbar-thumb-gray-900 scrollbar-track-gray-800 p-2 bg-clip-border space-y-1">
+                  {jsonData && reorderedNodes && this.renderNodesToDisplay(reorderedNodes, jsonData, null)}
                 </div>
               </div>
 
