@@ -25,18 +25,24 @@ class NestedTreeItem extends React.Component {
   }
 
   render() {
-    const { currentKey, parentKey, jsonData, jsonObjectFromKey, newParentKey, id, index, count, dragProvider } = this.props;
+    const { currentKey, parentKey, jsonData, jsonObjectFromKey, newParentKey, id, index, count, dragProvider, objectType, dragPrefix } = this.props;
     const depth = newParentKey !== null ? (newParentKey.indexOf('.') > -1 ? newParentKey.split('.').length : 1) : 1;
     const depthMargin = this.marginForDepth(depth);
-    const objectType = mainApi.util.getType(jsonData);
+    // const objectType = mainApi.util.getType(jsonData);
     const labelBgColor = labelColorForType(objectType);
-   
+    
+    //console.log('TREE ITEM: ', { currentKey, parentKey, jsonData, jsonObjectFromKey, newParentKey, id, index, count, dragProvider, objectType });
     return dragProvider !== null ? (
-      <Draggable draggableId={`SOURCE-${currentKey}-${newParentKey}`} index={index} key={`tree-item-${id}-${newParentKey}-${currentKey}`}> 
-        {(provided, snapshot) => (
+      <Draggable 
+        draggableId={`${dragPrefix}-${currentKey}-${newParentKey}`} 
+        index={index} 
+        key={`${dragPrefix}-tree-item-${id}-${newParentKey}-${currentKey}`}
+      > 
+        {(provided, snapshot) => {
+          return (
           <div 
             ref={provided.innerRef}
-            key={`tree-item-${id}-${index}-${newParentKey}-${currentKey}`}
+            // key={`tree-item-${id}-${index}-${newParentKey}-${currentKey}`}
             onMouseOver={() => this.handleMouseOverKey(currentKey, jsonObjectFromKey)}
             onClick={() => this.handleClickKey(currentKey, jsonData, newParentKey)}
             className="flex flex-row w-full rounded p-2 hover:bg-gray-800 cursor-pointer space-x-2 justify-between"
@@ -49,15 +55,18 @@ class NestedTreeItem extends React.Component {
               </span>
             )}
             <div className="flex flex-row justify-between w-full items-center">
-              <span className={`flex ${labelBgColor} font-bold font-family-mono rounded px-2 py-1 text-xs`}>{newParentKey} {index} {count}</span>
+              <span className={`flex ${labelBgColor} font-bold font-family-mono rounded px-2 py-1 text-xs`}>{currentKey} </span>
               <span className="flex bg-gray-700 font-medium font-family-mono rounded px-2 py-1 text-xs">{objectType}</span>
             </div>
           </div>
-      )}
+      )}}
     </Draggable>
     ) : (
       <div 
-        key={`tree-trsnaformed-item-${id}-${index}-${newParentKey}-${currentKey}`}
+        // onMouseOver={() => this.handleMouseOverKey(currentKey, jsonObjectFromKey)}
+        id={`tree-transformed-item-${id}-${index}-${newParentKey}-${currentKey}`}
+        onClick={() => this.handleClickKey(currentKey, jsonData, newParentKey)}
+        key={`tree-transformed-item-${id}-${index}-${newParentKey}-${currentKey}`}
         className="flex flex-row w-full rounded p-2 hover:bg-gray-800 cursor-pointer space-x-2 justify-between"
       >
         { parentKey !== null && (
@@ -82,12 +91,14 @@ NestedTreeItem.defaultProps = {
   jsonData: {},
   parentKey: null,
   newParentKey: null,
+  objectType: false,
   onClick(){},
   onMouseOver(){},
   onDragEnter(){},
   onDragend(){},
   onDragGoOver(){},
-  dragProvider: null
+  dragProvider: null,
+  dragPrefix: 'source'
 }
 
 export default NestedTreeItem;
